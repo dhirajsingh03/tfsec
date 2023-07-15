@@ -1,0 +1,28 @@
+description: >
+  Run tfsec scan
+parameters:
+  directory:
+    type: string
+    default: "."
+    description: Directory with tf code to recursively scan. Default to current directory
+  exclude-checks:
+    type: string
+    default: ""
+    description: Comma separated list of checks to exclude in the scan
+  tfvars-file:
+    type: string
+    default: ""
+    description: Path to tfvars file to include values in the scan
+steps:
+  - run:
+      name: "Run tfsec scan in directory: <<parameters.directory>>"
+      command: |
+        exclude_checks=""
+        tfvars_file=""
+        if [ -n "<<parameters.exclude-checks>>" ]; then
+          exclude_checks="-e <<parameters.exclude-checks>>"
+        fi
+        if [ -n "<<parameters.tfvars-file>>" ]; then
+          tfvars_file="--tfvars-file <<parameters.tfvars-file>>"
+        fi
+        tfsec <<parameters.directory>> $exclude_checks $tfvars_file
